@@ -6,7 +6,7 @@ from flask import Flask
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ChatJoinRequestHandler, CommandHandler, MessageHandler, filters, ContextTypes
 
-# --- FLASK SERVER (24/7 Active रखने के लिए) ---
+# --- FLASK SERVER (24/7 Active rakhne ke liye) ---
 web_app = Flask(__name__)
 
 @web_app.route('/')
@@ -22,7 +22,7 @@ def keep_alive():
     t.daemon = True
     t.start()
 
-# --- नया Bot Token और Admin ID ---
+# --- Bot Token aur Admin ID ---
 BOT_TOKEN = "9130024533:AAFblH_ATY4vG_lk__n9NoLCHBcRQaDnwAE"
 ADMIN_ID = 8343576029                     
 USERS_FILE = "users.json"
@@ -71,7 +71,7 @@ def get_saved_welcome_messages():
             return []
     return []
 
-# --- 1. Join Request आते ही सीक्वेंस से सारे वेलकम मैसेज भेजना ---
+# --- 1. Join Request aate hi sequence se saare welcome message bhejna ---
 async def handle_join_request(update: Update, context: ContextTypes.DEFAULT_TYPE):
     request = update.chat_join_request
     user = request.from_user
@@ -202,7 +202,13 @@ async def handle_join_request(update: Update, context: ContextTypes.DEFAULT_TYPE
             else:
                 print(f"Error sending default text: {e}")
 
-# --- 2. /setwelcome कमांड ---
+# --- 2. /start Command Handler ---
+async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    save_user(user.id)
+    await update.message.reply_text(f"👋 Namaste {user.first_name}! Bot ekdum active hai aur kaam kar raha hai.")
+
+# --- 3. /setwelcome Command ---
 async def set_welcome_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != ADMIN_ID:
         return
@@ -245,36 +251,36 @@ async def set_welcome_command(update: Update, context: ContextTypes.DEFAULT_TYPE
             welcome_list.append(welcome_data)
             with open(WELCOME_MSG_FILE, "w", encoding="utf-8") as f:
                 json.dump(welcome_list, f, ensure_ascii=False)
-            await message.reply_text(f"✨ प्रीमियम इमोजी और स्टाइल के साथ मैसेज जोड़ दिया गया है!\n📊 कुल सेट किए गए मैसेज: {len(welcome_list)}")
+            await message.reply_text(f"✨ Welcome message safaltapurvak jod diya gaya hai!\n📊 Total set kiye gaye message: {len(welcome_list)}")
         else:
-            await message.reply_text("❌ जिस मैसेज पर रिप्लाई किया है, उसमें टेक्स्ट, फोटो, फाइल या वॉइस नोट होना चाहिए।")
+            await message.reply_text("❌ Jis message par reply kiya hai, usme text, photo, file ya voice note hona chahiye.")
     else:
-        await message.reply_text("❌ कृपया अपने उस मैसेज पर रिप्लाई करें जिसे जोड़ना है और लिखें: /setwelcome")
+        await message.reply_text("❌ Kripya apne us message par reply karein jise jodna hai aur likhein: /setwelcome")
 
-# --- 3. /clearwelcome कमांड ---
+# --- 4. /clearwelcome Command ---
 async def clear_welcome_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != ADMIN_ID:
         return
     if os.path.exists(WELCOME_MSG_FILE):
         os.remove(WELCOME_MSG_FILE)
-    await update.message.reply_text("🗑️ सभी वेलकम मैसेज डिलीट/रीसेट कर दिए गए हैं!")
+    await update.message.reply_text("🗑️ Sabhi welcome message delete/reset kar diye gaye hain!")
 
-# --- 4. टेक्स्ट ब्रॉडकास्ट कमांड ---
+# --- 5. Text Broadcast Command ---
 async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != ADMIN_ID:
-        await update.message.reply_text("तू इस कमांड को इस्तेमाल नहीं कर सकता!")
+        await update.message.reply_text("Tu is command ko istemal nahi kar sakta!")
         return
 
     message_text = " ".join(context.args)
     if not message_text:
-        await update.message.reply_text("❌ कृपया मैसेज लिखें, जैसे: /broadcast आपका संदेश")
+        await update.message.reply_text("❌ Kripya message likhein, jaise: /broadcast aapka sandesh")
         return
 
     users = get_all_users()
     if users:
         success = 0
         failed = 0
-        status_msg = await update.message.reply_text("📤 ब्रॉडकास्ट शुरू हो गया है...")
+        status_msg = await update.message.reply_text("📤 Broadcast shuru ho gaya hai...")
         
         for user_id in users:
             try:
@@ -283,11 +289,11 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
             except Exception as e:
                 failed += 1
         
-        await status_msg.edit_text(f"✅ ब्रॉडकास्ट पूरा हुआ!\n\n सफल: {success}\n असफल: {failed}")
+        await status_msg.edit_text(f"✅ Broadcast pura hua!\n\n Safal: {success}\n Asafal: {failed}")
     else:
-        await update.message.reply_text("❌ कोई यूजर डेटाबेस नहीं मिला!")
+        await update.message.reply_text("❌ Koi user database nahi mila!")
 
-# --- 5. एडमिन लाइव चैट और बाकी हैंडलर ---
+# --- 6. Admin Live Chat aur baaki Handler ---
 async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     message = update.message
@@ -305,29 +311,29 @@ async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     elif message.text:
                         await context.bot.send_message(chat_id=target_user_id, text=message.text)
                     
-                    await message.reply_text("✅ मैसेज यूजर को भेज दिया गया है!")
+                    await message.reply_text("✅ Message user ko bhej diya gaya hai!")
                 except Exception as g:
-                    await message.reply_text(f"❌ भेजने में एरर आया: {g}")
+                    await message.reply_text(f"❌ Bhejne mein error aaya: {g}")
         return
 
     else:
         save_user(user.id)
         
         user_name = user.full_name
-        username = f"@{user.username}" if user.username else "कोई यूजरनेम नहीं"
+        username = f"@{user.username}" if user.username else "Koi username nahi"
         
-        forward_header = f"📩 नया मैसेज आया है!\n👤 नाम: {user_name}\n🔗 यूजरनेम: {username}\n🆔 User ID: {user.id}\n-------------------\n"
+        forward_header = f"📩 Naya message aaya hai!\n👤 Naam: {user_name}\n🔗 Username: {username}\n🆔 User ID: {user.id}\n-------------------\n"
         
         try:
             if message.text:
                 await context.bot.send_message(chat_id=ADMIN_ID, text=forward_header + message.text)
             elif message.voice:
-                await context.bot.send_message(chat_id=ADMIN_ID, text=forward_header + "[नीचे यूजर का वॉइस नोट है]")
+                await context.bot.send_message(chat_id=ADMIN_ID, text=forward_header + "[Neeche user ka voice note hai]")
                 await context.bot.send_voice(chat_id=ADMIN_ID, voice=message.voice.file_id)
             elif message.photo:
                 await context.bot.send_photo(chat_id=ADMIN_ID, photo=message.photo[-1].file_id, caption=forward_header + (message.caption or ""))
             else:
-                await context.bot.send_message(chat_id=ADMIN_ID, text=forward_header + "[यूजर ने मीडिया भेजा है]")
+                await context.bot.send_message(chat_id=ADMIN_ID, text=forward_header + "[User ne media bheja hai]")
         except Exception as e:
                 print(f"Error forwarding to admin: {e}")
 
@@ -336,6 +342,7 @@ if __name__ == '__main__':
     
     app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(ChatJoinRequestHandler(handle_join_request))
+    app.add_handler(CommandHandler("start", start_command))
     app.add_handler(CommandHandler("setwelcome", set_welcome_command))
     app.add_handler(CommandHandler("clearwelcome", clear_welcome_command))
     app.add_handler(CommandHandler("broadcast", broadcast))
