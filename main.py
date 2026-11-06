@@ -22,8 +22,8 @@ def keep_alive():
     t.daemon = True
     t.start()
 
-# --- Bot Token aur Admin ID ---
-BOT_TOKEN = "9130024533:AAFblH_ATY4vG_lk__n9NoLCHBcRQaDnwAE"
+# --- Naya Bot Token aur Admin ID ---
+BOT_TOKEN = "9130024533:AAH-OdmKnwCggIPHCsFn8WgA0g_mcjiipA8"
 ADMIN_ID = 8343576029                     
 USERS_FILE = "users.json"
 WELCOME_MSG_FILE = "welcome_msg.json"
