@@ -23,7 +23,7 @@ def keep_alive():
     t.start()
 
 # --- नया Bot Token और Admin ID ---
-BOT_TOKEN = "9130024533:AAEnz59o8XbZyJ3jK9n_qM_mfycdCm2q0Eg"
+BOT_TOKEN = "9130024533:AAFblH_ATY4vG_lk__n9NoLCHBcRQaDnwAE"
 ADMIN_ID = 8343576029                     
 USERS_FILE = "users.json"
 WELCOME_MSG_FILE = "welcome_msg.json"
